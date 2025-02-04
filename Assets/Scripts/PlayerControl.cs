@@ -4,8 +4,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerControl : MonoBehaviour
 {
-   [SerializeField] private GameObject weapon;
-        
+    [SerializeField] private GameObject weapon;
+
     private static readonly int SpeedX = Animator.StringToHash("speedX");
     [SerializeField] private GameObject weaponDummy;
 
@@ -63,8 +63,13 @@ public class PlayerControl : MonoBehaviour
 
     private void OnAttack(InputValue value)
     {
-        Instantiate(weapon, transform.position, Quaternion.identity);
+        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        GameObject cloneWeapon = Instantiate(weapon, transform.position, Quaternion.identity);
+        Vector2 myPosition = transform.position;
+        Vector2 direction = (mousePosition - myPosition).normalized;
         weaponDummy.SetActive(false);
+        
+        cloneWeapon.GetComponent<Rigidbody2D>().AddForce(direction * 10, ForceMode2D.Impulse);
     }
 
     private void OnMove(InputValue value)

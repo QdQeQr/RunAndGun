@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3670383973929319257}
   - component: {fileID: 4544007137162548652}
   - component: {fileID: 5754569999443681661}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -151,7 +151,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -175,5 +175,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4cf1f7541cb22443b49a09ad54ff22d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 1000
+  _speed: 100
   _rigidbody2D: {fileID: 4544007137162548652}
