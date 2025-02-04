@@ -11,6 +11,28 @@ public class Weapon : MonoBehaviour
     {
     }
 
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("ground"))
+        {
+            // Проверяем, что сам объект (к которому прикреплен скрипт) имеет тег "weapon"
+            if (gameObject.CompareTag("weapon"))
+            {
+                // Удаляем этот объект (оружие)
+                Destroy(gameObject);
+            }
+        }
+        if (other.gameObject.CompareTag("enemy"))
+        {
+            // Проверяем, что сам объект (к которому прикреплен скрипт) имеет тег "weapon"
+            if (gameObject.CompareTag("weapon"))
+            {
+                // Удаляем этот объект (оружие)
+                Destroy(gameObject);
+            }
+        }
+    }
+
     // Update is called once per frame
     private void FixedUpdate()
     {

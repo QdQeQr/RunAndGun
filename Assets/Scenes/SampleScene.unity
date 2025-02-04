@@ -248,7 +248,7 @@ GameObject:
   - component: {fileID: 228330328}
   m_Layer: 0
   m_Name: ENEMY
-  m_TagString: Untagged
+  m_TagString: enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1130,7 +1130,7 @@ MonoBehaviour:
   weapon: {fileID: 5954660439339599656, guid: 17da6bf754a2ef8409aff461ac44608a, type: 3}
   weaponDummy: {fileID: 8039490428693140691}
   jumpForce: 12
-  speed: 4
+  speed: 4.5
   groundMask:
     serializedVersion: 2
     m_Bits: 8

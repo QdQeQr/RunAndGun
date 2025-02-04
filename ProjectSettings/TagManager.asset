@@ -9,6 +9,8 @@ TagManager:
   - silver
   - money
   - player
+  - weapon
+  - enemy
   layers:
   - Default
   - TransparentFX
