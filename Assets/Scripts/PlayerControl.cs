@@ -4,17 +4,22 @@ using UnityEngine.InputSystem;
 
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField] private float _jumpForce;
-    [SerializeField] private float _speed;
-    
-    [SerializeField] private LayerMask _groundMask;
+   [SerializeField] private GameObject weapon;
+        
+    private static readonly int SpeedX = Animator.StringToHash("speedX");
+    [SerializeField] private GameObject weaponDummy;
+
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float speed;
+
+    [SerializeField] private LayerMask groundMask;
 
     private Animator _animator;
     private Rigidbody2D _rb;
 
-    private bool canJump = false;
+    private bool _canJump;
     private float _horizontal;
-    private int _counter = 0;
+    private int _counter;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -25,15 +30,15 @@ public class PlayerControl : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (other.gameObject.tag == "ground")
+        if (other.gameObject.CompareTag("ground"))
         {
-            canJump = false;
+            _canJump = false;
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.tag == "money")
+        if (other.gameObject.CompareTag("money"))
         {
             _counter = _counter + 1;
             Destroy(other.gameObject);
@@ -42,18 +47,24 @@ public class PlayerControl : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.tag == "ground")
+        if (other.gameObject.CompareTag("ground"))
         {
-            canJump = true;
+            _canJump = true;
         }
     }
 
     protected void OnJump(InputValue value)
     {
-        if (canJump == true)
+        if (_canJump == true)
         {
-            _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+            _rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }
+    }
+
+    private void OnAttack(InputValue value)
+    {
+        Instantiate(weapon, transform.position, Quaternion.identity);
+        weaponDummy.SetActive(false);
     }
 
     private void OnMove(InputValue value)
@@ -62,7 +73,7 @@ public class PlayerControl : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (_horizontal < 0)
         {
@@ -74,24 +85,24 @@ public class PlayerControl : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
         }
 
-        float velocityY = _rb.linearVelocityY;
-        Vector2 newVelocty = transform.right * _speed * _horizontal;
+        var velocityY = _rb.linearVelocityY;
+        Vector2 newVelocty = transform.right * speed * _horizontal;
         newVelocty.y = velocityY;
-        
-        _rb.linearVelocity = newVelocty;
-        float speedX = Math.Abs(_speed * _horizontal);
-        _animator.SetFloat("speedX", speedX);
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1, _groundMask);
+        _rb.linearVelocity = newVelocty;
+        var speedX = Math.Abs(speed * _horizontal);
+        _animator.SetFloat(SpeedX, speedX);
+
+        var hit = Physics2D.Raycast(transform.position, Vector2.down, 1, groundMask);
 
         if (hit.collider)
         {
             // Находим угол нормали
-            float angle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg;
-            
+            var angle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg;
+
             // Сдвигаем угол на -90°, чтобы персонаж "встал" на поверхность
-            float finalAngle = angle - 90f;
-            
+            var finalAngle = angle - 90f;
+
             // Применяем вращение
             transform.rotation = Quaternion.Euler(0, 0, finalAngle);
         }
