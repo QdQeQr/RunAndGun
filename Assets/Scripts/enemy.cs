@@ -1,45 +1,61 @@
 using System;
-using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class enemy : MonoBehaviour
+public class EnemyController : MonoBehaviour
 {
-    [SerializeField] private Collider2D _groundChecker;
-    [SerializeField] private float _enemySpeed;
+    private Rigidbody2D _rb;
+    public float raycastDistance; // Дистанция для проверки земли под монстром
+    public float moveSpeed; // Скорость движения монстра
+    public LayerMask groundLayerMask; // Слой с монстром
+    public Transform RaycastTransform;
+    private int isFacingRight = 1; // Направление движения монстра
 
-    private Vector2 _direction = Vector2.right;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        
+        _rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        transform.Translate(_direction * (Time.deltaTime * _enemySpeed));
+        Move();
+        CheckGround();
     }
 
-    private void FixedUpdate()
+    void Move()
     {
-        
-        List<Collider2D> colliders = new();
-        _groundChecker.Overlap(colliders);
+        _rb.linearVelocity = transform.right * (moveSpeed * isFacingRight);
+    }
 
-        bool isGround = false;
+    // ReSharper disable Unity.PerformanceAnalysis
+    void CheckGround()
+    {
+        // Луч для проверки земли под монстром
+        RaycastHit2D hit = Physics2D.Raycast(RaycastTransform.position, Vector2.down, raycastDistance, groundLayerMask);
         
-        foreach (Collider2D collider in colliders)
-        {
-            if (collider.gameObject.tag == "ground")
-            {
-                isGround = true;
-                break;
+            // Если луч не попал в землю
+        if (hit.collider) 
+        { 
+            // Находим угол нормали
+            var angle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg;
+            
+            // Сдвигаем угол на -90°, чтобы персонаж "встал" на поверхность
+            var finalAngle = angle - 90f;
+
+            // Применяем вращение
+            transform.rotation = Quaternion.Euler(0, 0, finalAngle);
             }
-        }
+            else
+            {
+                Flip();
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+    }
 
-        if (isGround == false)
-        {
-            _direction *= -1;
-        }
+    void Flip()
+    {
+        // Разворот монстра
+        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        isFacingRight *= -1;
     }
 }

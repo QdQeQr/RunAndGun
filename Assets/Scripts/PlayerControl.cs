@@ -31,9 +31,7 @@ public class PlayerControl : MonoBehaviour
     private void OnCollisionExit2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("ground"))
-        {
             _canJump = false;
-        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -48,17 +46,13 @@ public class PlayerControl : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("ground"))
-        {
             _canJump = true;
-        }
     }
 
     protected void OnJump(InputValue value)
     {
         if (_canJump == true)
-        {
             _rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-        }
     }
 
     private void OnAttack(InputValue value)
@@ -81,17 +75,13 @@ public class PlayerControl : MonoBehaviour
     private void Update()
     {
         if (_horizontal < 0)
-        {
             transform.localScale = new Vector3(-1, 1, 1);
-        }
 
         if (_horizontal > 0)
-        {
             transform.localScale = new Vector3(1, 1, 1);
-        }
 
         var velocityY = _rb.linearVelocityY;
-        Vector2 newVelocty = transform.right * speed * _horizontal;
+        Vector2 newVelocty = transform.right * (speed * _horizontal);
         newVelocty.y = velocityY;
 
         _rb.linearVelocity = newVelocty;
