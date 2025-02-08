@@ -13,6 +13,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private float speed;
 
     [SerializeField] private LayerMask groundMask;
+    [SerializeField] private float health;
 
     private Animator _animator;
     private Rigidbody2D _rb;
@@ -105,5 +106,12 @@ public class PlayerControl : MonoBehaviour
         {
             transform.rotation = Quaternion.Euler(0, 0, 0);
         }
+    }
+
+    
+    
+    public void ApplyDamage(float damage)
+    {
+        
     }
 }

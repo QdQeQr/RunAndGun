@@ -6,6 +6,8 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float _speed;
     [SerializeField] private Rigidbody2D _rigidbody2D;
 
+    [SerializeField] private float _damage;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -15,21 +17,13 @@ public class Weapon : MonoBehaviour
     {
         if (other.gameObject.CompareTag("ground"))
         {
-            // Проверяем, что сам объект (к которому прикреплен скрипт) имеет тег "weapon"
-            if (gameObject.CompareTag("weapon"))
-            {
-                // Удаляем этот объект (оружие)
-                Destroy(gameObject);
-            }
+            Destroy(gameObject);
         }
-        if (other.gameObject.CompareTag("enemy"))
+
+        if (other.gameObject.TryGetComponent(out EnemyController health))
         {
-            // Проверяем, что сам объект (к которому прикреплен скрипт) имеет тег "weapon"
-            if (gameObject.CompareTag("weapon"))
-            {
-                // Удаляем этот объект (оружие)
-                Destroy(gameObject);
-            }
+            health.ApplyDamage(_damage);
+            Destroy(gameObject);
         }
     }
 

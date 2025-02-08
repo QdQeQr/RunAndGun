@@ -1,5 +1,3 @@
-using System;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -9,6 +7,10 @@ public class EnemyController : MonoBehaviour
     public float moveSpeed; // Скорость движения монстра
     public LayerMask groundLayerMask; // Слой с монстром
     public Transform RaycastTransform;
+    [SerializeField] private float _damage;
+
+    [SerializeField] private float health;
+
     private int isFacingRight = 1; // Направление движения монстра
 
     private void Start()
@@ -22,34 +24,32 @@ public class EnemyController : MonoBehaviour
         CheckGround();
     }
 
-    void Move()
-    {
-        _rb.linearVelocity = transform.right * (moveSpeed * isFacingRight);
-    }
-
-    // ReSharper disable Unity.PerformanceAnalysis
     void CheckGround()
     {
         // Луч для проверки земли под монстром
-        RaycastHit2D hit = Physics2D.Raycast(RaycastTransform.position, Vector2.down, raycastDistance, groundLayerMask);
-        
-            // Если луч не попал в землю
-        if (hit.collider) 
-        { 
+        RaycastHit2D hit =
+            Physics2D.Raycast(RaycastTransform.position, Vector2.down, raycastDistance, groundLayerMask);
+
+        // Если луч попал в землю
+        if (hit.collider)
+        {
             // Находим угол нормали
             var angle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg;
-            
+
             // Сдвигаем угол на -90°, чтобы персонаж "встал" на поверхность
             var finalAngle = angle - 90f;
-
             // Применяем вращение
             transform.rotation = Quaternion.Euler(0, 0, finalAngle);
-            }
-            else
-            {
-                Flip();
-                transform.rotation = Quaternion.Euler(0, 0, 0);
-            }
+        }
+        else
+        {
+            Flip();
+        }
+    }
+
+    void Move()
+    {
+        _rb.linearVelocity = transform.right * (moveSpeed * isFacingRight);
     }
 
     void Flip()
@@ -57,5 +57,17 @@ public class EnemyController : MonoBehaviour
         // Разворот монстра
         transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
         isFacingRight *= -1;
+    }
+
+    public void ApplyDamage(float damage)
+    {
+        
+        health -= damage;
+        if (health <= 0)
+        {
+            Destroy(gameObject.GetComponent<Collider2D>());
+            this.enabled = false;
+            Destroy(gameObject, 3);
+        }
     }
 }
