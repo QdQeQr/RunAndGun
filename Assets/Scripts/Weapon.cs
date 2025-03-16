@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    [SerializeField] private float _speed;
-    [SerializeField] private Rigidbody2D _rigidbody2D;
 
     [SerializeField] private float _damage;
 
@@ -12,7 +10,6 @@ public class Weapon : MonoBehaviour
     void Start()
     {
     }
-
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("ground"))
@@ -28,10 +25,6 @@ public class Weapon : MonoBehaviour
     }
 
     // Update is called once per frame
-    private void FixedUpdate()
-    {
-        _rigidbody2D.angularVelocity = _speed;
-    }
 
     void Update()
     {

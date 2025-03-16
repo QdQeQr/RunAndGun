@@ -11,9 +11,12 @@ public class PlayerControl : MonoBehaviour
 
     [SerializeField] private float jumpForce;
     [SerializeField] private float speed;
+    [SerializeField] private float fireRate;
+    [SerializeField] private float health;
+    [SerializeField] private float throwStrenght;
+    [SerializeField] private float torqueStrenght;
 
     [SerializeField] private LayerMask groundMask;
-    [SerializeField] private float health;
 
     private Animator _animator;
     private Rigidbody2D _rb;
@@ -21,6 +24,9 @@ public class PlayerControl : MonoBehaviour
     private bool _canJump;
     private float _horizontal;
     private int _counter;
+    private float _lastShootTime;
+    private bool _attackInput;
+    private bool _canAttack;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -58,37 +64,66 @@ public class PlayerControl : MonoBehaviour
 
     private void OnAttack(InputValue value)
     {
-        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        GameObject cloneWeapon = Instantiate(weapon, transform.position, Quaternion.identity);
-        Vector2 myPosition = transform.position;
-        Vector2 direction = (mousePosition - myPosition).normalized;
-        weaponDummy.SetActive(false);
-        
-        cloneWeapon.GetComponent<Rigidbody2D>().AddForce(direction * 10, ForceMode2D.Impulse);
+        _attackInput = true;
     }
 
     private void OnMove(InputValue value)
     {
         _horizontal = value.Get<Vector2>().x;
     }
-
+    
     // Update is called once per frame
     private void Update()
+    {
+        FlipHorizonal();
+        Move();
+        AnimatorParametersUpdate();
+        RotationOnGround();
+        TryAttack();
+    }
+
+    private void TryAttack()
+    {
+        _canAttack = Time.time > _lastShootTime + fireRate;
+
+        if (_canAttack)
+        {
+            weaponDummy.SetActive(true);
+            if (_attackInput)
+            {
+                Attack();
+            }
+        }
+
+        _attackInput = false;
+    }
+
+    private void AnimatorParametersUpdate()
+    {
+        var speedX = Math.Abs(speed * _horizontal);
+        _animator.SetFloat(SpeedX, speedX);
+    }
+
+    private void Move()
+    {
+        var velocityY = _rb.linearVelocityY;
+        Vector2 newVelocty = transform.right * (speed * _horizontal);
+        newVelocty.y = velocityY;
+
+        _rb.linearVelocity = newVelocty;
+    }
+
+    private void FlipHorizonal()
     {
         if (_horizontal < 0)
             transform.localScale = new Vector3(-1, 1, 1);
 
         if (_horizontal > 0)
             transform.localScale = new Vector3(1, 1, 1);
+    }
 
-        var velocityY = _rb.linearVelocityY;
-        Vector2 newVelocty = transform.right * (speed * _horizontal);
-        newVelocty.y = velocityY;
-
-        _rb.linearVelocity = newVelocty;
-        var speedX = Math.Abs(speed * _horizontal);
-        _animator.SetFloat(SpeedX, speedX);
-
+    private void RotationOnGround()
+    {
         var hit = Physics2D.Raycast(transform.position, Vector2.down, 1, groundMask);
 
         if (hit.collider)
@@ -108,10 +143,21 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-    
-    
+    private void Attack()
+    {
+        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        GameObject cloneWeapon = Instantiate(weapon, transform.position, Quaternion.identity);
+        Vector2 myPosition = transform.position;
+        Vector2 direction = (mousePosition - myPosition).normalized;
+        weaponDummy.SetActive(false);
+        _lastShootTime = Time.time;
+        Rigidbody2D weaponRb = cloneWeapon.GetComponent<Rigidbody2D>();
+        weaponRb.AddForce(direction * throwStrenght, ForceMode2D.Impulse);
+        weaponRb.AddTorque(torqueStrenght, ForceMode2D.Impulse);
+    }
+
+
     public void ApplyDamage(float damage)
     {
-        
     }
 }
