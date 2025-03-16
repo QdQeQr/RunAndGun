@@ -1039,10 +1039,13 @@ MonoBehaviour:
   weaponDummy: {fileID: 8039490428693140691}
   jumpForce: 12
   speed: 4.5
+  fireRate: 1
+  health: 0
+  throwStrenght: 10
+  torqueStrenght: 2e+9
   groundMask:
     serializedVersion: 2
     m_Bits: 8
-  health: 0
 --- !u!50 &1104519825
 Rigidbody2D:
   serializedVersion: 5
